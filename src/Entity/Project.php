@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ProjectRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -18,19 +20,14 @@ class Project
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=50)
+     * @ORM\Column(type="string", length=255)
      */
-    private $labelle;
+    private $label;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
     private $description;
-
-    /**
-     * @ORM\Column(type="string", length=50)
-     */
-    private $state;
 
     /**
      * @ORM\Column(type="date")
@@ -40,31 +37,47 @@ class Project
     /**
      * @ORM\Column(type="date")
      */
-    private $finishDate;
+    private $endDate;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $listMembers;
+    private $state;
 
     /**
-     * @ORM\Column(type="string", length=50)
+     * @ORM\OneToMany(targetEntity=Task::class, mappedBy="project")
+     */
+    private $listTasks;
+
+    /**
+     * @ORM\OneToOne(targetEntity=User::class, cascade={"persist", "remove"})
      */
     private $chef;
+
+    /**
+     * @ORM\OneToMany(targetEntity=User::class, mappedBy="project")
+     */
+    private $listMembers;
+
+    public function __construct()
+    {
+        $this->listTasks = new ArrayCollection();
+        $this->listMembers = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getLabelle(): ?string
+    public function getLabel(): ?string
     {
-        return $this->labelle;
+        return $this->label;
     }
 
-    public function setLabelle(string $labelle): self
+    public function setLabel(string $label): self
     {
-        $this->labelle = $labelle;
+        $this->label = $label;
 
         return $this;
     }
@@ -81,18 +94,6 @@ class Project
         return $this;
     }
 
-    public function getState(): ?string
-    {
-        return $this->state;
-    }
-
-    public function setState(string $state): self
-    {
-        $this->state = $state;
-
-        return $this;
-    }
-
     public function getStartDate(): ?\DateTimeInterface
     {
         return $this->startDate;
@@ -105,38 +106,98 @@ class Project
         return $this;
     }
 
-    public function getFinishDate(): ?\DateTimeInterface
+    public function getEndDate(): ?\DateTimeInterface
     {
-        return $this->finishDate;
+        return $this->endDate;
     }
 
-    public function setFinishDate(\DateTimeInterface $finishDate): self
+    public function setEndDate(\DateTimeInterface $endDate): self
     {
-        $this->finishDate = $finishDate;
+        $this->endDate = $endDate;
 
         return $this;
     }
 
-    public function getListMembers(): ?string
+    public function getState(): ?string
     {
-        return $this->listMembers;
+        return $this->state;
     }
 
-    public function setListMembers(string $listMembers): self
+    public function setState(string $state): self
     {
-        $this->listMembers = $listMembers;
+        $this->state = $state;
 
         return $this;
     }
 
-    public function getChef(): ?string
+    /**
+     * @return Collection|Task[]
+     */
+    public function getListTasks(): Collection
+    {
+        return $this->listTasks;
+    }
+
+    public function addListTask(Task $listTask): self
+    {
+        if (!$this->listTasks->contains($listTask)) {
+            $this->listTasks[] = $listTask;
+            $listTask->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeListTask(Task $listTask): self
+    {
+        if ($this->listTasks->removeElement($listTask)) {
+            // set the owning side to null (unless already changed)
+            if ($listTask->getProject() === $this) {
+                $listTask->setProject(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getChef(): ?User
     {
         return $this->chef;
     }
 
-    public function setChef(string $chef): self
+    public function setChef(?User $chef): self
     {
         $this->chef = $chef;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getListMembers(): Collection
+    {
+        return $this->listMembers;
+    }
+
+    public function addListMember(User $listMember): self
+    {
+        if (!$this->listMembers->contains($listMember)) {
+            $this->listMembers[] = $listMember;
+            $listMember->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeListMember(User $listMember): self
+    {
+        if ($this->listMembers->removeElement($listMember)) {
+            // set the owning side to null (unless already changed)
+            if ($listMember->getProject() === $this) {
+                $listMember->setProject(null);
+            }
+        }
 
         return $this;
     }

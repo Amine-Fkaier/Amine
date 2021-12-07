@@ -18,19 +18,19 @@ class Task
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=50)
+     * @ORM\Column(type="string", length=255)
      */
-    private $labelle;
+    private $label;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $description;
+    private $desription;
 
     /**
-     * @ORM\Column(type="string", length=50)
+     * @ORM\Column(type="string", length=255)
      */
-    private $member;
+    private $state;
 
     /**
      * @ORM\Column(type="date")
@@ -40,50 +40,55 @@ class Task
     /**
      * @ORM\Column(type="date")
      */
-    private $finishDate;
+    private $endDate;
 
     /**
-     * @ORM\Column(type="string", length=25)
+     * @ORM\OneToOne(targetEntity=User::class, inversedBy="task", cascade={"persist", "remove"})
      */
-    private $state;
+    private $user;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Project::class, inversedBy="listTasks")
+     */
+    private $project;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getLabelle(): ?string
+    public function getLabel(): ?string
     {
-        return $this->labelle;
+        return $this->label;
     }
 
-    public function setLabelle(string $labelle): self
+    public function setLabel(string $label): self
     {
-        $this->labelle = $labelle;
+        $this->label = $label;
 
         return $this;
     }
 
-    public function getDescription(): ?string
+    public function getDesription(): ?string
     {
-        return $this->description;
+        return $this->desription;
     }
 
-    public function setDescription(string $description): self
+    public function setDesription(string $desription): self
     {
-        $this->description = $description;
+        $this->desription = $desription;
 
         return $this;
     }
 
-    public function getMember(): ?string
+    public function getState(): ?string
     {
-        return $this->member;
+        return $this->state;
     }
 
-    public function setMember(string $member): self
+    public function setState(string $state): self
     {
-        $this->member = $member;
+        $this->state = $state;
 
         return $this;
     }
@@ -100,26 +105,38 @@ class Task
         return $this;
     }
 
-    public function getFinishDate(): ?\DateTimeInterface
+    public function getEndDate(): ?\DateTimeInterface
     {
-        return $this->finishDate;
+        return $this->endDate;
     }
 
-    public function setFinishDate(\DateTimeInterface $finishDate): self
+    public function setEndDate(\DateTimeInterface $endDate): self
     {
-        $this->finishDate = $finishDate;
+        $this->endDate = $endDate;
 
         return $this;
     }
 
-    public function getState(): ?string
+    public function getUser(): ?User
     {
-        return $this->state;
+        return $this->user;
     }
 
-    public function setState(string $state): self
+    public function setUser(?User $user): self
     {
-        $this->state = $state;
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getProject(): ?Project
+    {
+        return $this->project;
+    }
+
+    public function setProject(?Project $project): self
+    {
+        $this->project = $project;
 
         return $this;
     }

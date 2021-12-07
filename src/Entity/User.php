@@ -7,7 +7,6 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
- * @ORM\Table(name="`user`")
  */
 class User
 {
@@ -19,38 +18,74 @@ class User
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=25)
+     * @ORM\Column(type="string", length=255)
+     */
+    private $userName;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $email;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $password;
+
+    /**
+     * @ORM\Column(type="string", length=255)
      */
     private $role;
 
     /**
-     * @ORM\Column(type="string", length=50)
+     * @ORM\OneToOne(targetEntity=Task::class, mappedBy="user", cascade={"persist", "remove"})
      */
-    private $firstName;
+    private $task;
 
     /**
-     * @ORM\Column(type="string", length=50)
+     * @ORM\ManyToOne(targetEntity=Project::class, inversedBy="listMembers")
      */
-    private $lastName;
-
-    /**
-     * @ORM\Column(type="string", length=8)
-     */
-    private $cin;
-
-    /**
-     * @ORM\Column(type="string", length=50, nullable=true)
-     */
-    private $tel;
-
-    /**
-     * @ORM\Column(type="string", length=50, nullable=true)
-     */
-    private $mail;
+    private $project;
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getUserName(): ?string
+    {
+        return $this->userName;
+    }
+
+    public function setUserName(string $userName): self
+    {
+        $this->userName = $userName;
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
+
+        return $this;
     }
 
     public function getRole(): ?string
@@ -65,62 +100,36 @@ class User
         return $this;
     }
 
-    public function getFirstName(): ?string
+    public function getTask(): ?Task
     {
-        return $this->firstName;
+        return $this->task;
     }
 
-    public function setFirstName(string $firstName): self
+    public function setTask(?Task $task): self
     {
-        $this->firstName = $firstName;
+        // unset the owning side of the relation if necessary
+        if ($task === null && $this->task !== null) {
+            $this->task->setUser(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($task !== null && $task->getUser() !== $this) {
+            $task->setUser($this);
+        }
+
+        $this->task = $task;
 
         return $this;
     }
 
-    public function getLastName(): ?string
+    public function getProject(): ?Project
     {
-        return $this->lastName;
+        return $this->project;
     }
 
-    public function setLastName(string $lastfirstName): self
+    public function setProject(?Project $project): self
     {
-        $this->lastName = $lastName;
-
-        return $this;
-    }
-
-    public function getCin(): ?string
-    {
-        return $this->cin;
-    }
-
-    public function setCin(string $cin): self
-    {
-        $this->cin = $cin;
-
-        return $this;
-    }
-
-    public function getTel(): ?string
-    {
-        return $this->tel;
-    }
-
-    public function setTel(?string $tel): self
-    {
-        $this->tel = $tel;
-
-        return $this;
-    }
-
-    public function getMail(): ?string
-    {
-        return $this->mail;
-    }
-
-    public function setMail(?string $mail): self
-    {
-        $this->mail = $mail;
+        $this->project = $project;
 
         return $this;
     }
