@@ -31,14 +31,15 @@ class Project
     private $description;
 
     /**
-     * @ORM\OneToMany(targetEntity=App\Entity\Task::class, mappedBy="project", cascade="remove")
+     * @ORM\OneToMany(targetEntity=App\Entity\Task::class, mappedBy="project")
+     * @ORM\JoinColumn(onDelete="CASCADE")
      */
     private $tasks;
 
 
     /**
      * @ORM\ManyToMany(targetEntity=App\Entity\User::class, inversedBy="projects")
-     *  @ORM\JoinColumn(onDelete="CASCADE")
+     * @ORM\JoinColumn(onDelete="CASCADE")
      */
     private $users;
 
