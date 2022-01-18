@@ -6,11 +6,17 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
+ *  * @UniqueEntity(fields="email", message="Email already taken")
+ * @UniqueEntity(fields="username", message="Username already taken")
  */
-class User
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**
      * @ORM\Id
@@ -18,6 +24,11 @@ class User
      * @ORM\Column(type="integer")
      */
     private $id;
+
+       /**
+     * @ORM\Column(type="string", length=25, unique=true)
+     */
+    private $username;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -34,21 +45,27 @@ class User
      */
     private $cin;
 
-    /**
-     * @ORM\Column(type="string", length=255)
+ /**
+     * @ORM\Column(type="json")
      */
-    private $role;
+    private $roles = [];
 
-    /**
-     * @ORM\Column(type="string", length=255)
+ /**
+     * @ORM\Column(type="string", length=180, unique=true)
      */
     private $email;
 
-    /**
-     * @ORM\Column(type="string", length=255)
+       /**
+     * @Assert\NotBlank()
+     * @Assert\Length(max=4096)
      */
-    private $motpasse;
+    // private $plainPassword;
 
+   /**
+     * @var string The hashed password
+     * @ORM\Column(type="string")
+     */
+    private $password;
     /**
      * @ORM\OneToMany(targetEntity=App\Entity\Task::class, mappedBy="user")
      *  @ORM\JoinColumn(onDelete="CASCADE")
@@ -65,11 +82,32 @@ class User
     {
         $this->tasks = new ArrayCollection();
         $this->projects = new ArrayCollection();
+        $this->roles = array('ROLE_USER');
+    }
+
+ /**
+     * The public representation of the user (e.g. a username, an email address, etc.)
+     *
+     * @see UserInterface
+     */
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
     }
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getUsername()
+    {
+        return $this->username;
+    }
+
+    public function setUsername($username)
+    {
+    $this->username = $username;
     }
 
     public function getFirstName(): ?string
@@ -108,18 +146,24 @@ class User
         return $this;
     }
 
-    public function getRole(): ?string
+    /**
+     * @see UserInterface
+     */
+    public function getRoles(): array
     {
-        return $this->role;
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
     }
 
-    public function setRole(string $role): self
+    public function setRoles(array $roles): self
     {
-        $this->role = $role;
+        $this->roles = $roles;
 
         return $this;
     }
-
     public function getEmail(): ?string
     {
         return $this->email;
@@ -132,14 +176,27 @@ class User
         return $this;
     }
 
-    public function getMotpasse(): ?string
+    // public function getPlainPassword()
+    // {
+    //     return $this->plainPassword;
+    // }
+
+    // public function setPlainPassword($password)
+    // {
+    //     $this->plainPassword = $password;
+    // }
+
+   /**
+     * @see PasswordAuthenticatedUserInterface
+     */
+    public function getPassword(): string
     {
-        return $this->motpasse;
+        return $this->password;
     }
 
-    public function setMotpasse(string $motpasse): self
+    public function setPassword(string $password): self
     {
-        $this->motpasse = $motpasse;
+        $this->password = $password;
 
         return $this;
     }
@@ -195,5 +252,25 @@ class User
     {
         $this->users->removeElement($project);
         return $this;
+    }
+
+     /**
+     * Returning a salt is only needed, if you are not using a modern
+     * hashing algorithm (e.g. bcrypt or sodium) in your security.yaml.
+     *
+     * @see UserInterface
+     */
+    public function getSalt(): ?string
+    {
+        return null;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials()
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
     }
 }

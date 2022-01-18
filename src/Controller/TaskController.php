@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Task;
+use App\Entity\User;
 use App\Form\TaskType;
 use App\Repository\TaskRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,7 +23,10 @@ class TaskController extends AbstractController
      */
     public function index(TaskRepository $taskRepository): Response
     {
+        $user = $this->get('security.token_storage')->getToken()->getUser();
+        $user->getUsername();
         return $this->render('task/index.html.twig', [
+            'AdminOrNot' => in_array('ROLE_ADMIN', $user->getRoles(), true),
             'tasks' => $taskRepository->findAll(),
         ]);
     }

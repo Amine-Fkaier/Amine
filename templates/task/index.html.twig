@@ -36,7 +36,9 @@
         {% endfor %}
         </tbody>
     </table>
-
-    <a href="{{ path('task_new') }}">Create new</a>
-    <a href="{{ path('home_page') }}">Index</a>
+    {% if (AdminOrNot)%}
+        <a href="{{ path('task_new') }}">Create new</a>
+    {% endif %}
+        <a href="{{ path('home_page') }}">Index</a>
+    
 {% endblock %}

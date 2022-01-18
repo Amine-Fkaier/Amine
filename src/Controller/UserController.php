@@ -21,8 +21,11 @@ class UserController extends AbstractController
      */
     public function index(UserRepository $userRepository): Response
     {
+        $userData = $this->get('security.token_storage')->getToken()->getUser();
+        $userData->getUsername();
         return $this->render('user/index.html.twig', [
             'users' => $userRepository->findAll(),
+            'AdminOrNot' => in_array('ROLE_ADMIN', $userData->getRoles(), true),
         ]);
     }
 
@@ -42,10 +45,13 @@ class UserController extends AbstractController
 
             return $this->redirectToRoute('user_index', [], Response::HTTP_SEE_OTHER);
         }
+        $userData = $this->get('security.token_storage')->getToken()->getUser();
+        $userData->getUsername();
 
         return $this->renderForm('user/new.html.twig', [
             'user' => $user,
             'form' => $form,
+            'AdminOrNot' => in_array('ROLE_ADMIN', $userData->getRoles(), true),
         ]);
     }
 
@@ -54,8 +60,11 @@ class UserController extends AbstractController
      */
     public function show(User $user): Response
     {
+        $userData = $this->get('security.token_storage')->getToken()->getUser();
+        $userData->getUsername();
         return $this->render('user/show.html.twig', [
             'user' => $user,
+            'AdminOrNot' => in_array('ROLE_ADMIN', $userData->getRoles(), true),
         ]);
     }
 
@@ -73,9 +82,13 @@ class UserController extends AbstractController
             return $this->redirectToRoute('user_index', [], Response::HTTP_SEE_OTHER);
         }
 
+        $userData = $this->get('security.token_storage')->getToken()->getUser();
+        $userData->getUsername();
+
         return $this->renderForm('user/edit.html.twig', [
             'user' => $user,
             'form' => $form,
+            'AdminOrNot' => in_array('ROLE_ADMIN', $userData->getRoles(), true),
         ]);
     }
 

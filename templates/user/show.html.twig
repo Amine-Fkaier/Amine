@@ -25,16 +25,16 @@
             </tr>
             <tr>
                 <th>Role</th>
-                <td>{{ user.role }}</td>
+                <td>{{ user.roles[0] }}</td>
             </tr>
             <tr>
                 <th>Email</th>
                 <td>{{ user.email }}</td>
             </tr>
-            <tr>
+            {# <tr>
                 <th>Motpasse</th>
-                <td>{{ user.motpasse }}</td>
-            </tr>
+                <td>{{ user.password }}</td>
+            </tr> #}
         </tbody>
     </table>
 
@@ -42,5 +42,7 @@
 
     <a href="{{ path('user_edit', {'id': user.id}) }}">edit</a>
 
-    {{ include('user/_delete_form.html.twig') }}
+    {% if (AdminOrNot)%}
+        {{ include('user/_delete_form.html.twig') }}
+    {% endif %}
 {% endblock %}

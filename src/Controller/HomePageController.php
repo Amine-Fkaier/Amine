@@ -13,8 +13,12 @@ class HomePageController extends AbstractController
      */
     public function index(): Response
     {
+        $user = $this->get('security.token_storage')->getToken()->getUser();
+        $user->getUsername();
         return $this->render('home_page/index.html.twig', [
             'controller_name' => 'HomePageController',
+            'AdminOrNot' => in_array('ROLE_ADMIN', $user->getRoles(), true),
+            'idUser' => $user->getId(),
         ]);
     }
 }

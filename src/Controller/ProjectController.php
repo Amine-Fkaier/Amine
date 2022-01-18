@@ -24,8 +24,11 @@ class ProjectController extends AbstractController
      */
     public function index(ProjectRepository $projectRepository): Response
     {
+        $user = $this->get('security.token_storage')->getToken()->getUser();
+        $user->getUsername();
         // dd($projectRepository->findAll());
         return $this->render('project/index.html.twig', [
+            'AdminOrNot' => in_array('ROLE_ADMIN', $user->getRoles(), true),
             'projects' => $projectRepository->findAll(),
         ]);
     }
@@ -67,7 +70,10 @@ class ProjectController extends AbstractController
      */
     public function show(Project $project): Response
     {
+        $user = $this->get('security.token_storage')->getToken()->getUser();
+        $user->getUsername();
         return $this->render('project/show.html.twig', [
+            'AdminOrNot' => in_array('ROLE_ADMIN', $user->getRoles(), true),
             'project' => $project,
         ]);
     }

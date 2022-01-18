@@ -9,6 +9,7 @@
         <thead>
             <tr>
                 {# <th>Id</th> #}
+                <th>UserName</th>
                 <th>FirstName</th>
                 <th>LastName</th>
                 {# <th>Cin</th> #}
@@ -22,10 +23,13 @@
         {% for user in users %}
             <tr>
                 {# <td>{{ user.id }}</td> #}
+                <td>{{ user.username }}</td>
                 <td>{{ user.firstName }}</td>
                 <td>{{ user.lastName }}</td>
                 {# <td>{{ user.cin }}</td> #}
-                <td>{{ user.role }}</td>
+                {% for role in user.roles %}
+                    <td>{{ role }}, </td>
+                {% endfor %}
                 <td>{{ user.email }}</td>
                 {# <td>{{ user.motpasse }}</td> #}
                 <td>
@@ -40,7 +44,9 @@
         {% endfor %}
         </tbody>
     </table>
-
-    <a href="{{ path('user_new') }}">Create new</a>
+    {% if (AdminOrNot)%}
+        <a href="{{ path('user_new') }}">Create new</a>
+    {% endif %}
+    
         <a href="{{ path('home_page') }}">Index</a>
 {% endblock %}

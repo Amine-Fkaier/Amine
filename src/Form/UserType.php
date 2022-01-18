@@ -8,23 +8,38 @@ use Symfony\Component\Form\ChoiceList\ChoiceList;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 
 class UserType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('username')
             ->add('firstName')
             ->add('lastName')
             ->add('cin')
-            ->add('role', ChoiceType::class, [
+            ->add('roles', ChoiceType::class, [
                 'choices'  => [
-                    'Chef' => 'Chef',
-                    'Membre' => 'Membre',
+                    'Leader' => 'ROLE_ADMIN',
+                    'Member' => 'ROLE_USER',
                 ],
+            'multiple'=>true,
             ])
+      
             ->add('email')
-            ->add('motpasse')
+            ->add('password', RepeatedType::class, [
+                'type' => PasswordType::class,
+                'first_options' => ['label' => 'Password'],
+                'second_options' => ['label' => 'Confirm Password']
+            ])
+        ;
+            // ->add('plainPassword', RepeatedType::class, array(
+            //     'type' => PasswordType::class,
+            //     'first_options'  => array('label' => 'Password'),
+            //     'second_options' => array('label' => 'Repeat Password'),
+            // ))
         ;
     }
 
